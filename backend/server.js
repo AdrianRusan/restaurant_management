@@ -3,6 +3,8 @@ const cors = require('cors');
 const { ApolloServer } = require('apollo-server-express');
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
+require('dotenv').config();
+
 
 async function startServer() {
   const app = express();
@@ -16,8 +18,7 @@ async function startServer() {
 
   await server.start();
 
-
-  server.applyMiddleware({ app, path: '/' });
+  server.applyMiddleware({ app, path: '/graphql' });
 
   const PORT = process.env.PORT || 4000;
   app.listen(PORT, () => {
