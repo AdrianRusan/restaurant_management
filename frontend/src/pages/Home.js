@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, CardContent, Typography, Button, Container, Grid, Box, Snackbar } from '@mui/material';
+import { Card, CardContent, Typography, Button, Container, Grid, Box, Snackbar, TextField } from '@mui/material';
 import { Alert } from '@mui/material';
 import axios from 'axios';
 import CreateRestaurantModal from '../components/CreateRestaurantModal';
@@ -18,6 +18,9 @@ const Home = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [currentRestaurant, setCurrentRestaurant] = useState(null);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -43,6 +46,27 @@ const Home = () => {
 
     fetchRestaurants();
   }, [page]);
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/graphql', {
+        query: `
+          query {
+            searchRestaurants(searchTerm: "${searchTerm}", page: ${page}, pageSize: 5) {
+              id
+              name
+              address
+              email
+              phone
+            }
+          }
+        `,
+      });
+      setSearchResults(response.data.data.searchRestaurants);
+    } catch (error) {
+      setError('Failed to search restaurants');
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -86,7 +110,8 @@ const Home = () => {
 
     setTimeout(() => {
       navigate('/login')
-    }, 500);  };
+    }, 500);
+  };
 
   return (
     <Container>
@@ -95,6 +120,15 @@ const Home = () => {
           <Typography variant="h4" color="primary">Restaurants</Typography>
           <Button variant="contained" color="secondary" onClick={handleSignOut}>Sign Out</Button>
         </Grid>
+      </Box>
+      <Box mb={2} display="flex" alignItems="center" justifyContent="space-between">
+        <TextField
+          label="Search"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Button variant="contained" color="primary" onClick={handleSearch}>Search</Button>
       </Box>
       {error && (
         <Alert severity="error" onClose={() => setError(null)}>{error}</Alert>
@@ -105,7 +139,7 @@ const Home = () => {
       <CreateRestaurantModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
       <EditRestaurantModal open={editModalOpen} onClose={handleEditClose} restaurant={currentRestaurant} />
       <Grid container spacing={3}>
-        {restaurants.map((restaurant) => (
+        {(searchResults.length > 0 ? searchResults : restaurants).map((restaurant) => (
           <Grid item key={restaurant.id} xs={12}>
             <Card 
               onClick={() => handleEdit(restaurant)}
@@ -158,7 +192,7 @@ const Home = () => {
             variant="contained" 
             color="primary" 
             onClick={() => setPage(page + 1)} 
-            disabled={restaurants.length < 5}
+            disabled={searchResults.length > 0 ? searchResults.length < 5 : restaurants.length < 5}
           >
             Next
           </Button>

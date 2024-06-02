@@ -21,7 +21,7 @@ const resolvers = {
         where: {
           [Op.or]: [
             { name: { [Op.like]: `%${searchTerm}%` } },
-            { address: { [Op.like]: `%${searchTerm}%` } }
+            // { address: { [Op.like]: `%${searchTerm}%` } }
           ],
         },
         offset,

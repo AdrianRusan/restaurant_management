@@ -59,6 +59,10 @@ const Register = () => {
     setOpenSnackbar(false);
   };
 
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
   return (
     <Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
       <Grid item>
@@ -111,6 +115,12 @@ const Register = () => {
               {error}
             </Alert>
           )}
+          <Typography variant="body1" align="center" style={{ marginTop: 20 }}>
+            Already have an account?{' '}
+            <Button color="primary" onClick={handleLogin}>
+              Login
+            </Button>
+          </Typography>
         </Paper>
       </Grid>
       <Snackbar
