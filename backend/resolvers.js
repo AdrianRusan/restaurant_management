@@ -31,11 +31,19 @@ const resolvers = {
   },
   Mutation : {
     createRestaurant: async(_, {name, address, email, phone}) => {
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new Error('Invalid email address');
+      }
+
       return await Restaurant.create({name, address, email, phone})
     },
     updateRestaurant: async(_, {id, name, address, email, phone}) => {
       const restaurant = await Restaurant.findByPk(id);
       if (!restaurant) throw new Error('Restaurant not found');
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new Error('Invalid email address');
+      }
 
       return await restaurant.update({name, address, email, phone});
     },

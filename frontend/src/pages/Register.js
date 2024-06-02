@@ -39,7 +39,6 @@ const Register = () => {
       if (response.data.errors) {
         throw new Error(response.data.errors[0].message);
       }
-      console.log('Registered:', response.data.data.register);
       setOpenSnackbar(true);
       setLoading(false);
       setError(null);
