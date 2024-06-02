@@ -43,7 +43,10 @@ const Register = () => {
       setOpenSnackbar(true);
       setLoading(false);
       setError(null);
-      navigate('/')
+
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000);
     } catch (error) {
       setError(error.message || 'An error occurred during registration');
       setLoading(false);
